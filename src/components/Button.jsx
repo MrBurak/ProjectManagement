@@ -1,6 +1,6 @@
 export default function Button({children, ...props})
 {
-    const className="px-4 py-2 text-xs md:text-base rounded-md bg-stone-700 text-stone-400 hover:bg-stone-600 hover:text-stone-100"
+    const className="px-2 py-1 text-xs md:text-base rounded-md bg-green-600 text-green-50 hover:bg-green-700 hover:text-green-100"
  
     return (<button 
         {...props} 

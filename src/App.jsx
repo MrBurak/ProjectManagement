@@ -8,7 +8,8 @@ import { v4 as uuid } from 'uuid'
 function App() {
 const[projectState,setProjectState] = useState({
   selectedProjectId:undefined,
-  projects:[]
+  projects:[],
+  tasks:[]
 });
 
 
@@ -55,7 +56,7 @@ const[projectState,setProjectState] = useState({
 
       return {
         ...prev,
-        selectedProjectId:projectId,
+        selectedProjectId:undefined,
         projects:[...prev.projects, newProject]
       }
     })
@@ -67,7 +68,34 @@ const[projectState,setProjectState] = useState({
       return {
         ...prev,
         selectedProjectId:undefined,
-        projects:prev.projects.filter(project=> project.id!=id)
+        projects:prev.projects.filter(project=> project.id!=id),
+        tasks:prev.tasks.filter(task=> task.projectId!=id)
+      }
+    }) 
+  }
+
+  function handleAddTask(text)
+  {
+    setProjectState(prev => {
+      const taskId=uuid()
+      const newTask={
+        text:text,
+        projectId:projectState.selectedProjectId,
+        id:taskId
+      }
+
+      return {
+        ...prev,
+        tasks:[...prev.tasks, newTask]
+      }
+    })
+  }
+  function handleDeleteTask(id)
+  {
+    setProjectState(prev => {
+      return {
+        ...prev,
+        tasks:prev.tasks.filter(task=> task.id!=id)
       }
     }) 
   }
@@ -78,7 +106,9 @@ const[projectState,setProjectState] = useState({
     {
       content= <NewProject 
                 cancelClicked={handleCancelAddProjectClick} 
-                onAddProject={handleAddProject} />
+                onAddProject={handleAddProject}
+                projects={projectState.projects}
+                />
     }
     else if(projectState.selectedProjectId===undefined)
     {
@@ -88,10 +118,18 @@ const[projectState,setProjectState] = useState({
     else
     {
       const projectData = projectState.projects.find(project => project.id==projectState.selectedProjectId);
-      content=<SelectedProject projectData={projectData} onDelete={handleProjectDelete} />
+      const taskData=projectState.tasks.filter(task => task.projectId==projectState.selectedProjectId);
+      content=<SelectedProject 
+      projectData={projectData} 
+      onDelete={handleProjectDelete}
+      onAddProject={handleAddProject}
+      onAddTask={handleAddTask}
+      onDeleteTask={handleDeleteTask}
+      tasks= {taskData}
+      />
     }
 
-
+    
   return (
     <main className="h-screen my-8 flex gap-8">
     <ProjectsSidebar 
@@ -99,6 +137,7 @@ const[projectState,setProjectState] = useState({
       projects={projectState.projects}
       onProjectSelect={handleProjectSelect}
       selectedProjectId={projectState.selectedProjectId}
+
       />
     {content}
     </main>

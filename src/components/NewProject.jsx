@@ -1,13 +1,20 @@
-import Input from "./Input"
-import { useRef } from "react"
+import FormInput from "./FormInput"
+import { useRef, useState } from "react"
 import Modal from "./Modal"
+import Button from "./Button"
+import AntiButton from "./AntiButton"
 
-export default function NewProject({cancelClicked, onAddProject})
+export default function NewProject({cancelClicked, onAddProject, projects})
 {
     const modal = useRef()
     const titleRef = useRef()
     const descriptionRef = useRef()
     const dueDateRef = useRef()
+    const [validateMessage, setValidateMessage] = useState({
+        header:"",
+        message1:"",
+        message2:""
+    });
 
     function handleSave()
     {
@@ -16,28 +23,53 @@ export default function NewProject({cancelClicked, onAddProject})
         const dueDateValue=dueDateRef.current.value.trim();
         if(titleValue==="" || descriptionValue==="" || dueDateValue==="")
         {
+            setValidateMessage(
+                {
+                    header:"Invalid Input",
+                    message1:"Oops... Looks like you forgot to enter a value",
+                    message2:"Please make sure you provided a name for the project",
+
+                }
+            );
             modal.current.open();
             return;
         }
+        var existing=projects.find((project)=> project.title===titleValue)
+        if (existing) 
+        {
+            setValidateMessage(
+                {
+                    header:"Validation failed",
+                    message1:"Oops... Looks like you have this project",
+                    message2:"Please make sure you provided a name for the project does not exist",
+
+                }
+            )
+            modal.current.open();
+            return;
+        }    
+    
+    
+
 
         onAddProject({title:titleValue, description:descriptionValue, dueDate:dueDateValue })
     }
 
     return<>
         <Modal ref={modal} buttonCaption={"Close"}>
-            <h2 className="text-xl font-bold text-stone-700 mt-4 mb-4">Invalid Input</h2>
-            <p className="text-stone-600 mb-4">Oops... Looks like you forgot to enter a value</p>
-            <p className="text-stone-600 mb-4">Please make sure you provided all required values</p>
+            <h2 className="text-xl font-bold text-stone-700 mt-4 mb-4">{validateMessage.header}</h2>
+            <p className="text-stone-600 mb-4">{validateMessage.message1}</p>
+            <p className="text-stone-600 mb-4">{validateMessage.message2}</p>
         </Modal>
         <div className="w-[35rem] mt-16">
         <menu className="flex items-center justify-end gap-4 my-4">
-            <li><button onClick={cancelClicked} className="text-stone-800 hover:text-stone-950">Cancel</button></li>
-            <li><button onClick={handleSave} className="px-4 py-2 rounded-md  bg-stone-800 text-stone-50 hover:bg-stone-950">Save</button></li>
+            <li><AntiButton onClick={cancelClicked} >Cancel</AntiButton></li>
+            <li><Button onClick={handleSave} >Save</Button></li>
         </menu>
         <div>
-            <Input type="text" label="Title" ref={titleRef} />
-            <Input label="Description" textarea ref={descriptionRef} />
-            <Input type="date" label="Due Date" ref={dueDateRef} />
+            <FormInput type="text" label="Title" ref={titleRef} />
+            <FormInput label="Description" textarea ref={descriptionRef} />
+            <FormInput type="date" label="Due Date" ref={dueDateRef} />
         </div>
     </div>
     </>

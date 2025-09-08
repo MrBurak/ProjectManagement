@@ -1,15 +1,24 @@
-
-import { useRef } from "react"
-export default function Tasks({projectData, onAddTask, onDeleteTask})
+import NewTask from "./NewTask";
+import AntiButton from "./AntiButton";
+export default function Tasks({tasks, onAddTask, onDeleteTask})
 {
-    const newTaskRef=useRef();
+    console.log(tasks)
+    function handleDelete(id)
+    {
+        onDeleteTask(id);
+    }
     return(<section>
         <h2 className="text-2xl font-bold text-stone-700 mb-4">TASKS</h2>
-        <input type="text"></input><button></button>
-        <p className="text-stone-400 mb-4">This project does not have a task yet</p>
-        <ul>
-        
-
+        <NewTask tasks={tasks} onAddTask={onAddTask} />
+        <ul className="bg-stone-200">
+        {tasks.length==0 && <p className="text-stone-800 mt-4">This project does not have any task yet</p>}
+        {tasks.map(task=>
+            <li key={task.id} className="flex justify-between my-4 px-4 py-2">
+                <span>{task.text}</span>
+                <AntiButton onClick={()=>handleDelete(task.id)} className="text-stone-700 hover:text-red-500">
+                    Delete
+                </AntiButton>
+                </li>)}
         </ul>
     </section>)
 }

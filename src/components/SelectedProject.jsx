@@ -1,6 +1,6 @@
 import Button from "./Button"
 import Tasks from "./Tasks"
-export default function SelectedProject({projectData, onDelete, onAddTask, onDeleteTask})
+export default function SelectedProject({projectData, onDelete, onAddTask, onDeleteTask, tasks})
 {
     
 
@@ -22,6 +22,6 @@ export default function SelectedProject({projectData, onDelete, onAddTask, onDel
             <p className="mb-4 text-stone-400">{formatedDate}</p>
             <p className="text-stone-600 whitespace-pre-wrap">{projectData.description}</p>
         </header>
-        <Tasks projectData={projectData} onAddTask={onAddTask} onDeleteTask={onDeleteTask} />       
+        <Tasks projectData={projectData} onAddTask={onAddTask} onDeleteTask={onDeleteTask} tasks={tasks} />       
     </div>)
 }
