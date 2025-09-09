@@ -3,9 +3,13 @@ import { useRef, useState } from "react"
 import Modal from "./Modal"
 import Button from "./Button"
 import AntiButton from "./AntiButton"
+import { useContext } from "react"
+import { ProjectContext } from "../store/project-context"
 
-export default function NewProject({cancelClicked, onAddProject, projects})
+export default function NewProject()
 {
+    const {onCancelAddProject, projects, onAddProject}=useContext(ProjectContext);
+
     const modal = useRef()
     const titleRef = useRef()
     const descriptionRef = useRef()
@@ -63,7 +67,7 @@ export default function NewProject({cancelClicked, onAddProject, projects})
         </Modal>
         <div className="w-[35rem] mt-16">
         <menu className="flex items-center justify-end gap-4 my-4">
-            <li><AntiButton onClick={cancelClicked} >Cancel</AntiButton></li>
+            <li><AntiButton onClick={onCancelAddProject} >Cancel</AntiButton></li>
             <li><Button onClick={handleSave} >Save</Button></li>
         </menu>
         <div>

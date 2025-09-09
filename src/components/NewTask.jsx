@@ -1,10 +1,12 @@
 import { useRef, useState } from "react"
 import Modal from "./Modal";
 import Button from "./Button";
-import Input from "./Input";
+import { useContext } from "react"
+import { ProjectContext } from "../store/project-context"
 
-export default function NewTask({tasks, onAddTask})
+export default function NewTask()
 {
+   const {tasks, onAddTask}=useContext(ProjectContext);
     const modal=useRef()
     const [enteredTask, setEnteredTask] = useState("");
     const [validateMessage, setValidateMessage] = useState("");

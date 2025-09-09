@@ -4,6 +4,7 @@ import NoProjectSelected from "./components/NoProjectSelected";
 import SelectedProject from "./components/SelectedProject";
 import { useState } from "react";
 import { v4 as uuid } from 'uuid'
+import { ProjectContext } from "./store/project-context";
 
 function App() {
 const[projectState,setProjectState] = useState({
@@ -13,7 +14,7 @@ const[projectState,setProjectState] = useState({
 });
 
 
-  function handleStartAddProjectClick()
+  function handleStartAddProject()
   {
     setProjectState(prev => {
       return {
@@ -23,7 +24,7 @@ const[projectState,setProjectState] = useState({
     })
   }
 
-  function handleCancelAddProjectClick()
+  function handleCancelAddProject()
   {
     setProjectState(prev => {
       return {
@@ -62,13 +63,13 @@ const[projectState,setProjectState] = useState({
     })
   }
 
-  function handleProjectDelete(id)
+  function handleProjectDelete()
   {
     setProjectState(prev => {
       return {
         ...prev,
         selectedProjectId:undefined,
-        projects:prev.projects.filter(project=> project.id!=id),
+        projects:prev.projects.filter(project=> project.id!=projectState.selectedProjectId),
         tasks:prev.tasks.filter(task=> task.projectId!=id)
       }
     }) 
@@ -104,43 +105,38 @@ const[projectState,setProjectState] = useState({
   let content;
   if(projectState.selectedProjectId===null)
     {
-      content= <NewProject 
-                cancelClicked={handleCancelAddProjectClick} 
-                onAddProject={handleAddProject}
-                projects={projectState.projects}
-                />
+      content= <NewProject />
     }
     else if(projectState.selectedProjectId===undefined)
     {
-      content= <NoProjectSelected 
-                onStartAddProjectClick={handleStartAddProjectClick} />
+      content= <NoProjectSelected />
     }
     else
     {
-      const projectData = projectState.projects.find(project => project.id==projectState.selectedProjectId);
-      const taskData=projectState.tasks.filter(task => task.projectId==projectState.selectedProjectId);
-      content=<SelectedProject 
-      projectData={projectData} 
-      onDelete={handleProjectDelete}
-      onAddProject={handleAddProject}
-      onAddTask={handleAddTask}
-      onDeleteTask={handleDeleteTask}
-      tasks= {taskData}
-      />
+      content=<SelectedProject />
     }
-
+  const contextValue=
+  {
+    projectData : projectState.projects.find(project => project.id==projectState.selectedProjectId),
+    selectedProjectId:projectState.selectedProjectId,
+    projects:projectState.projects,
+    tasks: projectState.tasks.filter(task => task.projectId==projectState.selectedProjectId),
+    onDeleteProject:handleProjectDelete,
+    onStartAddProject:handleStartAddProject,
+    onCancelAddProject:handleCancelAddProject,
+    onAddProject:handleAddProject,
+    onSelectProject:handleProjectSelect,
+    onDeleteTask:handleDeleteTask,
+    onAddTask:handleAddTask,
+  }
     
   return (
+    <ProjectContext.Provider value={contextValue}>
     <main className="h-screen my-8 flex gap-8">
-    <ProjectsSidebar 
-      onStartAddProjectClick={handleStartAddProjectClick}  
-      projects={projectState.projects}
-      onProjectSelect={handleProjectSelect}
-      selectedProjectId={projectState.selectedProjectId}
-
-      />
+    <ProjectsSidebar />
     {content}
     </main>
+    </ProjectContext.Provider>
   );
 }
 export default App;
